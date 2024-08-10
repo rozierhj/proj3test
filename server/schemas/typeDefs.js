@@ -1,43 +1,40 @@
 const typeDefs = `
-  # Define the Book type based on the bookSchema
-  type Book {
+  # Define the Recipe type based on the recipeSchema
+  type Recipe {
     _id: ID
-    bookId: String
-    authors: [String]
-    description: String
+    recipeId: Int
     title: String
     image: String
-    link: String
     
   }
 
-  # Define the User type
-  type User {
+  # Define the Foodie type
+  type Foodie {
     _id: ID
     username: String!
     email: String!
     password: String!
-    bookCount: Int
-    savedBooks: [Book]
+    recipeCount: Int
+    savedRecipes: [Recipe]
   }
 
   # Define the Query type
   type Query {
-    me: User
+    me: Foodie
   }
 
-  # Define the Mutation type for creating and updating users
+  # Define the Mutation type for creating and updating foodies
   type Mutation {
     login(email: String!, password: String!): Auth
-    addUser(username: String!, email: String!, password: String!): Auth
-    saveBook(authors: [String], description: String, title: String, bookId: String, image: String, link: String): User
-    removeBook(bookId: String!): User
+    addFoodie(username: String!, email: String!, password: String!): Auth
+    saveRecipe(title: String, recipeId: Int, image: String): Foodie
+    removeRecipe(recipeId: Int!): Foodie
   }
 
   # Define the Auth type to handle authentication responses
   type Auth {
     token: ID!
-    user: User
+    foodie: Foodie
   }
 `;
 

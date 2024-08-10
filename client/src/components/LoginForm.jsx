@@ -3,21 +3,21 @@ import { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
-import { LOGIN_USER } from '../utils/mutations';
+import { LOGIN_FOODIE } from '../utils/mutations';
 
 
 import Auth from '../utils/auth';
 
 const LoginForm = () => {
 
-  const [ loginUser, {error} ] = useMutation(LOGIN_USER);
-  const [userFormData, setUserFormData] = useState({ email: '', password: '' });
+  const [ loginFoodie, {error} ] = useMutation(LOGIN_FOODIE);
+  const [foodieFormData, setFoodieFormData] = useState({ email: '', password: '' });
   const [validated] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setUserFormData({ ...userFormData, [name]: value });
+    setFoodieFormData({ ...foodieFormData, [name]: value });
   };
 
   const handleFormSubmit = async (event) => {
@@ -35,8 +35,8 @@ const LoginForm = () => {
 
       // if (!response.ok) {
       //   throw new Error('something went wrong!');
-      const {data} = await loginUser({
-        variables: {...userFormData},
+      const {data} = await loginFoodie({
+        variables: {...foodieFormData},
       });
 
       Auth.login(data.login.token);
@@ -51,7 +51,7 @@ const LoginForm = () => {
       setShowAlert(true);
     }
 
-    setUserFormData({
+    setFoodieFormData({
       username: '',
       email: '',
       password: '',
@@ -71,7 +71,7 @@ const LoginForm = () => {
             placeholder='Your email'
             name='email'
             onChange={handleInputChange}
-            value={userFormData.email}
+            value={foodieFormData.email}
             required
           />
           <Form.Control.Feedback type='invalid'>Email is required!</Form.Control.Feedback>
@@ -84,13 +84,13 @@ const LoginForm = () => {
             placeholder='Your password'
             name='password'
             onChange={handleInputChange}
-            value={userFormData.password}
+            value={foodieFormData.password}
             required
           />
           <Form.Control.Feedback type='invalid'>Password is required!</Form.Control.Feedback>
         </Form.Group>
         <Button
-          disabled={!(userFormData.email && userFormData.password)}
+          disabled={!(foodieFormData.email && foodieFormData.password)}
           type='submit'
           variant='success'>
           Submit

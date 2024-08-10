@@ -1,22 +1,22 @@
 import { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { useMutation } from '@apollo/client';
-import { ADD_USER } from '../utils/mutations';
+import { ADD_FOODIE } from '../utils/mutations';
 import Auth from '../utils/auth';
 
 const SignupForm = () => {
   // set initial form state
-  const [userFormData, setUserFormData] = useState({ username: '', email: '', password: '' });
+  const [foodieFormData, setFoodieFormData] = useState({ username: '', email: '', password: '' });
   // set state for form validation
   const [validated] = useState(false);
   // set state for alert
   const [showAlert, setShowAlert] = useState(false);
 
-  const [addUser, { error }] = useMutation(ADD_USER);
+  const [addFoodie, { error }] = useMutation(ADD_FOODIE);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setUserFormData({ ...userFormData, [name]: value });
+    setFoodieFormData({ ...foodieFormData, [name]: value });
   };
 
   const handleFormSubmit = async (event) => {
@@ -31,18 +31,18 @@ const SignupForm = () => {
 
     try {
 
-      const {data} = await addUser({
-        variables:{...userFormData},
+      const {data} = await addFoodie({
+        variables:{...foodieFormData},
       });
 
-      Auth.login(data.addUser.token);
+      Auth.login(data.addFoodie.token);
     } 
     catch (err) {
       console.error(err);
       setShowAlert(true);
     }
 
-    setUserFormData({
+    setFoodieFormData({
       username: '',
       email: '',
       password: '',
@@ -65,7 +65,7 @@ const SignupForm = () => {
             placeholder='Your username'
             name='username'
             onChange={handleInputChange}
-            value={userFormData.username}
+            value={foodieFormData.username}
             required
           />
           <Form.Control.Feedback type='invalid'>Username is required!</Form.Control.Feedback>
@@ -78,7 +78,7 @@ const SignupForm = () => {
             placeholder='Your email address'
             name='email'
             onChange={handleInputChange}
-            value={userFormData.email}
+            value={foodieFormData.email}
             required
           />
           <Form.Control.Feedback type='invalid'>Email is required!</Form.Control.Feedback>
@@ -91,13 +91,13 @@ const SignupForm = () => {
             placeholder='Your password'
             name='password'
             onChange={handleInputChange}
-            value={userFormData.password}
+            value={foodieFormData.password}
             required
           />
           <Form.Control.Feedback type='invalid'>Password is required!</Form.Control.Feedback>
         </Form.Group>
         <Button
-          disabled={!(userFormData.username && userFormData.email && userFormData.password)}
+          disabled={!(foodieFormData.username && foodieFormData.email && foodieFormData.password)}
           type='submit'
           variant='success'>
           Submit

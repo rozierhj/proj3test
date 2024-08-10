@@ -8,20 +8,20 @@ import {
 } from 'react-bootstrap';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_ME } from '../utils/queries';
-import { REMOVE_BOOK } from '../utils/mutations';
+import { REMOVE_RECIPE } from '../utils/mutations';
 import Auth from '../utils/auth';
 
 
-const SavedBooks = () => {
+const SavedRecipes = () => {
 
   //getting use data query
   const {loading, data } = useQuery(GET_ME);
 
   //removing user book mutation
-  const [removeBook] = useMutation(REMOVE_BOOK, {
+  const [removeRecipe] = useMutation(REMOVE_RECIPE, {
 
     //update appolo clients cache
-    update(cache, {data: {removeBook}}){
+    update(cache, {data: {removeRecipe}}){
       try{
 
         //get users data from cache
@@ -29,8 +29,8 @@ const SavedBooks = () => {
         cache.writeQuery({
           query: GET_ME,
           //filter out the book that was just removed
-          data: {me:{...me, savedBooks: me.savedBooks.filter(book => book.bookId !== removeBook.bookId),
-            bookCount: me.bookCount - 1,
+          data: {me:{...me, savedRecipes: me.savedRecipes.filter(recipe => recipe.recipeId !== removeRecipe.recipeId),
+            recipeCount: me.recipeCount - 1,
           }},
         });
       }
@@ -41,7 +41,7 @@ const SavedBooks = () => {
   });
 
   //deletes the book from the database
-  const handleDeleteBook = async (bookId) => {
+  const handleDeleteRecipe = async (recipeId) => {
 
     //leave if user no authenticated
     if(!Auth.loggedIn()){
@@ -50,8 +50,8 @@ const SavedBooks = () => {
 
     try {
 
-      await removeBook({
-        variables:{bookId},
+      await removeRecipe({
+        variables:{recipeId},
       });
     } 
     catch (err) {
@@ -60,10 +60,10 @@ const SavedBooks = () => {
   };
 
   //getting users data
-  const userData = data?.me || {};
+  const foodieData = data?.me || {};
   
   // if data isn't here yet, say LOADING will test using email which is expected value
-  if (userData.email === undefined || userData.email === null || userData.email ==='') {
+  if (foodieData.email === undefined || foodieData.email === null || foodieData.email ==='') {
     return <h2>LOADING...</h2>;
   }
 
@@ -77,22 +77,21 @@ const SavedBooks = () => {
       </div>
       <Container>
         <h2 className='pt-5'>
-          {userData.bookCount
-            ? `Viewing ${userData.bookCount} saved ${userData.bookCount === 1 ? 'book' : 'books'}:`
+          {foodieData.recipeCount
+            ? `Viewing ${foodieData.recipeCount} saved ${foodieData.recipeCount === 1 ? 'book' : 'books'}:`
             : 'You have no saved books!'}
         </h2>
         <Row>
-          {userData.savedBooks.map((book) => {
+          {foodieData.savedRecipes.map((recipe) => {
             return (
               <Col md="4">
-                <Card key={book.bookId} border='dark'>
-                  {book.image ? <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' /> : null}
+                <Card key={recipe.recipeId} border='dark'>
+                  {recipe.image ? <Card.Img src={recipe.image} alt={`The cover for ${recipe.title}`} variant='top' /> : null}
                   <Card.Body>
-                    <Card.Title>{book.title}</Card.Title>
-                    <p className='small'>Authors: {book.authors}</p>
-                    <Card.Text>{book.description}</Card.Text>
-                    <Card.Link href={book.link} target='_blank' rel='noopener noreferrer' style={{ display: 'block', marginBottom: '10px' }}>Read Book</Card.Link>
-                    <Button className='btn-block btn-danger' onClick={() => handleDeleteBook(book.bookId)}>
+                    <Card.Title>{recipe.title}</Card.Title>
+                    <p className='small'>Authors: </p>
+                    <Card.Text>description</Card.Text>
+                    <Button className='btn-block btn-danger' onClick={() => handleDeleteRecipe(recipe.recipeId)}>
                       Delete this Book!
                     </Button>
                   </Card.Body>
@@ -108,4 +107,4 @@ const SavedBooks = () => {
 
 };
 
-export default SavedBooks;
+export default SavedRecipes;

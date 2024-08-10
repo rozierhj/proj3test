@@ -1,4 +1,4 @@
-const { User } = require('../models');
+const { Foodie } = require('../models');
 const { AuthenticationError } = require('apollo-server-express');
 const { signToken } = require('../utils/auth');
 
@@ -7,8 +7,8 @@ const resolvers = {
 
     // Get the currently authenticated user
     me: async (parent, args, context) => {
-      if (context.user) {
-        return User.findOne({ _id: context.user._id }).populate('savedBooks');
+      if (context.foodie) {
+        return Foodie.findOne({ _id: context.foodie._id }).populate('savedRecipes');
       }
       throw new AuthenticationError('You must be logged in!');
     },
@@ -17,54 +17,54 @@ const resolvers = {
   Mutation: {
 
     // Add a new user
-    addUser: async (parent, { username, email, password }) => {
-      const user = await User.create({ username, email, password });
-      const token = signToken(user);
-      return { token, user };
+    addFoodie: async (parent, { username, email, password }) => {
+      const foodie = await Foodie.create({ username, email, password });
+      const token = signToken(foodie);
+      return { token, foodie };
     },
 
     // Log in a user
     login: async (parent, { email, password }) => {
-      const user = await User.findOne({ email });
+      const foodie = await Foodie.findOne({ email });
 
-      if (!user) {
+      if (!foodie) {
         throw new AuthenticationError('Incorrect credentials');
       }
 
-      const correctPw = await user.isCorrectPassword(password);
+      const correctPw = await foodie.isCorrectPassword(password);
 
       if (!correctPw) {
         throw new AuthenticationError('Incorrect credentials');
       }
 
-      const token = signToken(user);
-      return { token, user };
+      const token = signToken(foodie);
+      return { token, foodie };
     },
 
     // Save a book to the user's savedBooks array
-    saveBook: async (parent, { authors, description, title, bookId, image, link }, context) => {
-      if (context.user) {
-        const updatedUser = await User.findByIdAndUpdate(
-          { _id: context.user._id },
-          { $addToSet: { savedBooks: { authors, description, title, bookId, image, link } } },
+    saveRecipe: async (parent, {title, recipeId, image }, context) => {
+      if (context.foodie) {
+        const updatedFoodie = await Foodie.findByIdAndUpdate(
+          { _id: context.foodie._id },
+          { $addToSet: { savedRecipes: { title, recipeId, image} } },
           { new: true }
-        ).populate('savedBooks');
+        ).populate('savedRecipes');
 
-        return updatedUser;
+        return updatedFoodie;
       }
       throw new AuthenticationError('You must be logged in!');
     },
 
     // Remove a book from the user's savedBooks array
-    removeBook: async (parent, { bookId }, context) => {
-      if (context.user) {
-        const updatedUser = await User.findByIdAndUpdate(
-          { _id: context.user._id },
-          { $pull: { savedBooks: { bookId } } },
+    removeRecipe: async (parent, { recipeId }, context) => {
+      if (context.foodie) {
+        const updatedFoodie = await Foodie.findByIdAndUpdate(
+          { _id: context.foodie._id },
+          { $pull: { savedRecipes: { recipeId } } },
           { new: true }
-        ).populate('savedBooks');
+        ).populate('savedRecipes');
 
-        return updatedUser;
+        return updatedFoodie;
       }
       throw new AuthenticationError('You must be logged in!');
     },
